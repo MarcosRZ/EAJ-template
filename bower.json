@@ -1,0 +1,22 @@
+{
+  "name": "angular-express-jwt",
+  "description": "",
+  "main": "index.js",
+  "authors": [
+    "MarcosRZ <msucaro@ŋmail.com>"
+  ],
+  "license": "ISC",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "^1.5.8",
+    "bootstrap": "^3.3.7",
+    "jquery": "^3.1.0"
+  }
+}
