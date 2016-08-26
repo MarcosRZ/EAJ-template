@@ -1,11 +1,31 @@
-var express = require('express')
-var jwt = require('jsonwebtoken')
-var md5 = require('md5')
-var bodyParser = require('body-parser')
-var morgan = require('morgan')
-var app = express();
+var express 			= require('express')
+var jwt 					= require('jsonwebtoken')
+var md5 					= require('md5')
+var bodyParser 		= require('body-parser')
+var morgan 				= require('morgan')
+var expressjwt 		= require('express-jwt')
+var jwt 					= require('jsonwebtoken')
+var cookieParser	= require('cookie-parser')
+
+var app 					= express();
 
 var config = require('./config')
+
+var getTokenFromCookie = function (req) {
+		console.log("POLLAS")
+
+    if (req.cookies.Authorization && req.cookies.Authorization.split(' ')[0] === 'Bearer') {
+        return req.cookies.Authorization.split(' ')[1];
+    } else if (req.query && req.query.token) {
+      return req.query.token;
+    }
+
+		req.headers.token
+
+		console.log(req.cookies)
+
+    return null;
+}
 
 app.use(morgan('dev'))
 
@@ -15,7 +35,9 @@ app.use('/bower_components', express.static(__dirname + '/bower_components'));
 
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+app.use(cookieParser())
 
+// ROUTES
 // JWT Authentication endpoint
 app.post('/auth', (req, res) => {
 
@@ -27,6 +49,7 @@ app.post('/auth', (req, res) => {
 		}
 
 		res.send(jwt.sign(payload, config.secret))
+
 	} else {
 		res.sendStatus(401);
 	}
@@ -43,8 +66,9 @@ app.get('/user', function(req, res){
   res.sendFile(__dirname + '/public/core/user/index.html');
 });
 
-app.get('/admin', function(req, res){
-  res.sendFile(__dirname + '/public/core/admin/index.html');
+app.get('/admin', expressjwt({secret: config.secret, getToken: getTokenFromCookie}), function(req, res){
+	
+  	res.sendFile(__dirname + '/public/core/admin/index.html');
 });
 
 app.get('*', function(req, res){
